@@ -198,11 +198,6 @@ print(f"Dados exportados com sucesso para {caminho_saida}")
 
 #-------------------------------------------------------------------------------------------
 #Parte 3: Recorrencias
-import os
-import geopandas as gpd
-import pandas as pd
-
-
 def calcular_area_ha(gdf, area_field):
     """
     Calcula a área em hectares e insere no campo especificado.
@@ -289,11 +284,6 @@ intersecao_sequencial(directory, talhoes_path)
 
 #------------------------------------------------------------------------------------------------------------------
 #Parte 4: Recorrencia Acumulada
-import os
-import geopandas as gpd
-import pandas as pd
-
-
 def calcular_area_ha(gdf, area_field):
     """
     Calcula a área em hectares e insere no campo especificado.
