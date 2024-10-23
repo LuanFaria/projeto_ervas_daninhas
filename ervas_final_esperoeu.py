@@ -4,17 +4,15 @@ import pandas as pd
 import re
 import warnings
 
+#LUAN DO FUTURO, NAO ESQUECER A ORDEM ... ERVAS_MENSAL > ERVA_ACUMULADA_E_MENSAL > RECORRENCIAS > RECORRENCIA_ACUMULADA
 
-directory = 'X://Sigmagis//Projetos//Grupo Ipiranga//ESTUDO ERVAS//Vetores//Shape//ERVAS_TESTE_3//23_24'
+directory = 'X://Sigmagis//Projetos//Grupo Ipiranga//ESTUDO ERVAS//Vetores//Shape//ERVAS_TESTE_3//ref'
 talhoes_path = 'X:/Sigmagis/Projetos/Grupo Ipiranga/ESTUDO ERVAS/Vetores/Shape/BASE_TALHOES/BASE_TALHOES_MOCOCA.shp'
 
-warnings.filterwarnings("ignore")  #IGNORA OS AVISOS DE ALERTASD
+warnings.filterwarnings("ignore")  #IGNORA OS AVISOS DE ALERTAS
 #PARTE 1: Ervas Mensal
+
 def validate_and_fix_topology(gdf):
-    """
-    Função para corrigir a topologia dos shapefiles, corrigindo geometrias inválidas.
-    """
-    # Aplicar buffer(0) para corrigir possíveis problemas topológicos
     gdf['geometry'] = gdf['geometry'].buffer(0)
     return gdf
 
@@ -271,7 +269,7 @@ def intersecao_sequencial(directory, talhoes_path):
         df_concatenado = pd.concat(lista_df)
 
         # Exportar o DataFrame para um arquivo Excel
-        caminho_saida = directory+'/saida/planilhas/ervas_recorrentes_mensal_fazendas.xlsx' 
+        caminho_saida = directory+'/saida/planilhas/ervas_recorrentes_mensal_fazendas.xlsx'  # Substitua pelo caminho desejado
         df_concatenado.to_excel(caminho_saida, index=False)
 
 
@@ -284,16 +282,25 @@ intersecao_sequencial(directory, talhoes_path)
 
 #------------------------------------------------------------------------------------------------------------------
 #Parte 4: Recorrencia Acumulada
-print('\nPARTE 4: Exportando Recorrencias Mensais Acumuladas')
-gdf_referencia = gpd.read_file(talhoes_path)
+print('\nPARTE 4: Calculando e exportando recorrencia acumulada')
+# Ler o shapefile de fazendas
+fazendas = gpd.read_file(talhoes_path)
+
 # Caminho da pasta contendo os shapefiles a serem mesclados
-caminho_pasta = saida_intersect
-caminho_excel = os.path.join(directory+'/saida/planilhas/ervas_recorrentes_mensal_acumulado_fazendas.xlsx')
-caminho_saida = directory+'/saida/acumulado_recorrencia_erva/'
+caminho_pasta = directory+'/saida/intersect_final'
+caminho_saida = directory+'/saida/planilhas'
 os.makedirs(caminho_saida, exist_ok=True)  # Criar a pasta de saída se não existir
 
-# Obtenha uma lista de arquivos shapefile na pasta
-arquivos_shapefiles = [os.path.join(caminho_pasta, f) for f in os.listdir(caminho_pasta) if f.endswith('.shp')]
+# Função para extrair o número de um nome de arquivo
+def extrair_numero(nome_arquivo):
+    numeros = re.findall(r'\d+', nome_arquivo)  # Encontra todos os números no nome do arquivo
+    return int(numeros[0]) if numeros else 0
+
+# Obtenha uma lista de arquivos shapefile na pasta e ordene numericamente pelo número no nome
+arquivos_shapefiles = sorted(
+    [os.path.join(caminho_pasta, f) for f in os.listdir(caminho_pasta) if f.endswith('.shp')],
+    key=lambda x: extrair_numero(os.path.basename(x))
+)
 
 # Leia o primeiro shapefile como base
 shapefile_base = gpd.read_file(arquivos_shapefiles[0])
@@ -315,7 +322,7 @@ for i in range(1, len(arquivos_shapefiles)):
     shapefile_base = shapefile_base.dissolve()
 
     # Realizar interseção com o shapefile de fazendas
-    gdf_interseccao = gpd.overlay(shapefile_base, talhoes_path, how='intersection')
+    gdf_interseccao = gpd.overlay(shapefile_base, fazendas, how='intersection')
 
     # Calcular a área em hectares
     gdf_interseccao['AREA_GIS'] = gdf_interseccao.area / 10000  # Conversão para hectares
@@ -333,8 +340,12 @@ for i in range(1, len(arquivos_shapefiles)):
 # Concatenar todos os resultados em um único DataFrame
 df_final = pd.concat([pd.DataFrame(gdf.drop(columns='geometry')) for gdf in todos_resultados], ignore_index=True)
 
+colunas_para_remover = ['LAYER','CNPJ', 'AREA_FAZ'] 
+df_final = df_final.drop(columns=colunas_para_remover, errors='ignore')
+
 # Salvar todos os resultados em uma única planilha Excel
+caminho_excel = os.path.join(caminho_saida, "ervas_recorrentes_mensal_acumulado_fazendas.xlsx")
 df_final.to_excel(caminho_excel, index=False)
 
-print(f"Mesclagem e dissolve aplicados com sucesso! Arquivos shapefile salvos em: {caminho_saida}")
+print(f"\nMesclagem e dissolve aplicados com sucesso! Arquivos shapefile salvos em: {caminho_saida}")
 print(f"Resultados salvos em planilha Excel: {caminho_excel}")
