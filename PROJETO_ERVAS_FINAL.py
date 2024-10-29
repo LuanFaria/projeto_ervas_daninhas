@@ -55,21 +55,6 @@ def merge_and_dissolve_shapes(directory):
             # Adicionar o shapefile dissolvido à lista para o merge final
             dissolved_shapes.append(dissolved)
 
-    # Realizar o merge de todos os shapefiles dissolvidos
-    #if dissolved_shapes:
-        #consolidated = gpd.GeoDataFrame(pd.concat(dissolved_shapes, ignore_index=True))
-        
-        # Realizar o dissolve final
-        #final_dissolved = consolidated.dissolve()
-
-        # Definir o caminho de saída para o shapefile consolidado
-        #output_consolidated_path = os.path.join(directory, "area_consolidada.shp")
-
-        # Salvar o shapefile final dissolvido
-        #final_dissolved.to_file(output_consolidated_path)
-        #print(f"Shapefile consolidado salvo: {output_consolidated_path}")
-
-
 #output_directory = os.path.join(directory, "merge")
 print("\nPARTE 1: Gerando Ervas Mensais")
 merge_and_dissolve_shapes(directory)
