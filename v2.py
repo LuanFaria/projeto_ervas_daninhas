@@ -7,7 +7,7 @@ caminho_pasta = 'C:/Users/Luan/Desktop/PROJETO_ERVAS-20241007T003219Z-001/PROJET
 caminho_saida = "C:/Users/Luan/Desktop/PROJETO_ERVAS-20241007T003219Z-001/PROJETO_ERVAS/teste_saida/fim"
 os.makedirs(caminho_saida, exist_ok=True)  # Criar a pasta de saída se não existir
 
-# Obtenha uma lista de arquivos shapefile na pasta
+# Obtenha uma lista de arquivos shapefile na pasta vamos testar 
 arquivos_shapefiles = [os.path.join(caminho_pasta, f) for f in os.listdir(caminho_pasta) if f.endswith('.shp')]
 
 # Leia o primeiro shapefile como base
