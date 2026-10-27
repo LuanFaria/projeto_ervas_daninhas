@@ -3,7 +3,7 @@ import geopandas as gpd
 import pandas as pd
 import re
 import warnings
-
+#opa
 
 directory = 'X://Sigmagis//Projetos//Grupo Ipiranga//ESTUDO ERVAS//Vetores//Shape//ERVAS_TESTE_3//23_24'
 talhoes_path = 'X:/Sigmagis/Projetos/Grupo Ipiranga/ESTUDO ERVAS/Vetores/Shape/BASE_TALHOES/BASE_TALHOES_MOCOCA.shp'
